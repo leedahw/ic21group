@@ -60,84 +60,84 @@ frame.on("ready", function() {
     }, 100);
     physics.drag();
 
-    // function won() {
+    // //function won() {
 
-      var pane = new Pane({width:550,
+    //   var pane = new Pane({width:550,
+    //     height:200,
+    //     fadeTime:.7,
+    //     corner:10,
+    //     modal:false,
+    //     displayClose:false})
+    //     .loc(0,500)
+    //     .ske(10,0)
+    //     .show();
+
+    //   new Label({
+    //     text:"You Won",
+    //     size:80,
+    //     color:grey,
+    //   }).center(pane);
+
+    //   var replay = new Button({
+    //     width:220,
+    //     height:50,
+    //     label:"REPLAY",
+    //     backgroundColor:green,
+    //     rollBackgroundColor:blue,
+    //     corner:10
+    //   }).center(pane);
+    //   replay.mov(135,100);
+
+    //   var mainmenu = new Button({
+    //     width:250,
+    //     height:50,
+    //     label:"MAIN MENU",
+    //     backgroundColor:green,
+    //     rollBackgroundColor:blue,
+    //     corner:10
+    //   }).center(pane);
+    //   mainmenu.mov(-120,100);
+
+    // }
+
+     //function lost() {
+
+      var pane2 = new Pane({width:550,
         height:200,
         fadeTime:.7,
         corner:10,
         modal:false,
         displayClose:false})
-        .loc(0,500)
         .ske(10,0)
         .show();
-
+      
       new Label({
-        text:"You Won",
+        text:"Game Over",
         size:80,
         color:grey,
-      }).center(pane);
-
-      var replay = new Button({
+      }).center(pane2);
+      
+      var tryagain = new Button({
         width:220,
         height:50,
-        label:"REPLAY",
+        label:"TRY AGAIN",
         backgroundColor:green,
         rollBackgroundColor:blue,
         corner:10
-      }).center(pane);
-      replay.mov(135,100);
-
-      var mainmenu = new Button({
+      }).center(pane2);
+      tryagain.mov(135,100);
+      
+      var mainmenu2 = new Button({
         width:250,
         height:50,
         label:"MAIN MENU",
         backgroundColor:green,
         rollBackgroundColor:blue,
         corner:10
-      }).center(pane);
-      mainmenu.mov(-120,100);
+      }).center(pane2);
+      mainmenu2.mov(-120,100);
 
-    // }
-
-    // function lost() {
-
-      // var pane2 = new Pane({width:550,
-      //   height:200,
-      //   fadeTime:.7,
-      //   corner:10,
-      //   modal:false,
-      //   displayClose:false})
-      //   .ske(10,0)
-      //   .show();
-      //
-      // new Label({
-      //   text:"Game Over",
-      //   size:80,
-      //   color:grey,
-      // }).center(pane2);
-      //
-      // var tryagain = new Button({
-      //   width:220,
-      //   height:50,
-      //   label:"TRY GAIN",
-      //   backgroundColor:green,
-      //   rollBackgroundColor:blue,
-      //   corner:10
-      // }).center(pane2);
-      // tryagain.mov(135,100);
-      //
-      // var mainmenu2 = new Button({
-      //   width:250,
-      //   height:50,
-      //   label:"MAIN MENU",
-      //   backgroundColor:green,
-      //   rollBackgroundColor:blue,
-      //   corner:10
-      // }).center(pane2);
-      // mainmenu2.mov(-120,100);
-
-    // }
+    //}
 
     stage.update(); // this is needed to show any changes
 
