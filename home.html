@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ZIM Physics</title>
+
+<!-- Welcome to ZIM at http://zimjs.com - Code Interactive Media Pizzazz!             -->
+<!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS http://createjs.com -->
+<!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner     -->
+<!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate     -->
+
+<script src="https://zimjs.org/cdn/1.2.0/createjs_min.js"></script>
+<script src="https://zimjs.org/cdn/10.5.3/zim.js"></script>
+<!-- use zimjs.com/distill for minified individual functions! -->
+
+<!-- import Box2D and ZIM Physics helper -->
+<script src="https://zimjs.org/cdn/Box2dWeb-2.1.a.3.min.js"></script>
+<script src="https://zimjs.org/cdn/physics_2.0.js"></script>
+
+<script src="https://zimjs.com/ten/header.js"></script>
+
+<script>
+
+// SCALING OPTIONS
+// scaling can have values as follows with full being the default
+// "fit"    sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"    sets canvas and stage to dimensions and scales to fit outside window size
+// "full"    sets stage to window size with no scaling
+// "tagID"    add canvas to HTML tag of ID - set to dimensions if provided - no scaling
+
+var scaling = "fit"; // this will resize to fit inside the screen dimensions
+var width = 1024;
+var height = 768;
+var color = light;
+var outerColor = darker;
+var testText;
+
+// as of ZIM 5.5.0 you do not need to put zim before ZIM functions and classes
+var frame = new Frame({scaling, width, height, color, outerColor});
+frame.on("ready", function() {
+    zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
+
+    var stage = frame.stage;
+    var stageW = frame.width;
+    var stageH = frame.height;
+
+    // See https://zimjs.com/docs.html?item=Physics
+    // See https://zimjs.com/docs.html?item=addPhysics
+
+    // new Physics(gravity, borders, scroll, frame)
+
+    var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
+
+    var bar = new Rectangle(500, 50, black).centerReg().addPhysics(false);
+
+    var balls = new Container().addTo();
+    interval(20, function () {
+        new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
+            .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
+    }, 100);
+    physics.drag();
+
+    // function won() {
+
+      var pane = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        displayClose:false})
+        .loc(0,500)
+        .ske(10,0)
+        .show();
+
+      new Label({
+        text:"You Won",
+        size:80,
+        color:grey,
+      }).center(pane);
+
+      var replay = new Button({
+        width:220,
+        height:50,
+        label:"REPLAY",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane);
+      replay.mov(135,100);
+
+      var mainmenu = new Button({
+        width:250,
+        height:50,
+        label:"MAIN MENU",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane);
+      mainmenu.mov(-120,100);
+
+    // }
+
+    // function lost() {
+
+      // var pane2 = new Pane({width:550,
+      //   height:200,
+      //   fadeTime:.7,
+      //   corner:10,
+      //   modal:false,
+      //   displayClose:false})
+      //   .ske(10,0)
+      //   .show();
+      //
+      // new Label({
+      //   text:"Game Over",
+      //   size:80,
+      //   color:grey,
+      // }).center(pane2);
+      //
+      // var tryagain = new Button({
+      //   width:220,
+      //   height:50,
+      //   label:"TRY GAIN",
+      //   backgroundColor:green,
+      //   rollBackgroundColor:blue,
+      //   corner:10
+      // }).center(pane2);
+      // tryagain.mov(135,100);
+      //
+      // var mainmenu2 = new Button({
+      //   width:250,
+      //   height:50,
+      //   label:"MAIN MENU",
+      //   backgroundColor:green,
+      //   rollBackgroundColor:blue,
+      //   corner:10
+      // }).center(pane2);
+      // mainmenu2.mov(-120,100);
+
+    // }
+
+    stage.update(); // this is needed to show any changes
+
+    // var physics_boundary = new Physics(0, new Boundary(0,-500, stageW, stageH+100));
+    // bar.addPhysics();
+    // stage.update();
+
+}); // end of ready
+
+</script>
+
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+
+</head>
+
+<body>
+</body>
+</html>
