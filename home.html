@@ -49,16 +49,57 @@ frame.on("ready", function() {
 
     // new Physics(gravity, borders, scroll, frame)
 
-    var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
+    intro ();
+    function intro() {
+      let introPane = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        backdropColor: "#595959",
+        displayClose:false})
+        .ske(10,0)
+        .show();
+      
+      let title = new Label({
+        text:"Fruits Basket",
+        size:80,
+        color:red,
+      }).center(introPane);
 
-    var bar = new Rectangle(500, 50, black).centerReg().addPhysics(false);
+      let startButton = new Button ({
+        width:250,
+        height:50,
+        label:"START!",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(introPane).mov(0,100);
 
-    var balls = new Container().addTo();
-    interval(20, function () {
-        new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
-            .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
-    }, 100);
-    physics.drag();
+      startButton.on("mousedown", ()=>{
+        introPane.hide();
+        game();
+      });
+
+    }
+
+
+    function game(){
+      
+    // var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
+
+    // var bar = new Rectangle(500, 50, black).centerReg().addPhysics(false);
+
+    // var balls = new Container().addTo();
+    // interval(20, function () {
+    //     new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
+    //         .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
+    // }, 100);
+    // physics.drag();
+
+
+
+    }
 
     // //function won() {
 
@@ -102,40 +143,40 @@ frame.on("ready", function() {
 
      //function lost() {
 
-      var pane2 = new Pane({width:550,
-        height:200,
-        fadeTime:.7,
-        corner:10,
-        modal:false,
-        displayClose:false})
-        .ske(10,0)
-        .show();
+      // var pane2 = new Pane({width:550,
+      //   height:200,
+      //   fadeTime:.7,
+      //   corner:10,
+      //   modal:false,
+      //   displayClose:false})
+      //   .ske(10,0)
+      //   .show();
       
-      new Label({
-        text:"Game Over",
-        size:80,
-        color:grey,
-      }).center(pane2);
+      // new Label({
+      //   text:"Game Over",
+      //   size:80,
+      //   color:grey,
+      // }).center(pane2);
       
-      var tryagain = new Button({
-        width:220,
-        height:50,
-        label:"TRY AGAIN",
-        backgroundColor:green,
-        rollBackgroundColor:blue,
-        corner:10
-      }).center(pane2);
-      tryagain.mov(135,100);
+      // var tryagain = new Button({
+      //   width:220,
+      //   height:50,
+      //   label:"TRY AGAIN",
+      //   backgroundColor:green,
+      //   rollBackgroundColor:blue,
+      //   corner:10
+      // }).center(pane2);
+      // tryagain.mov(135,100);
       
-      var mainmenu2 = new Button({
-        width:250,
-        height:50,
-        label:"MAIN MENU",
-        backgroundColor:green,
-        rollBackgroundColor:blue,
-        corner:10
-      }).center(pane2);
-      mainmenu2.mov(-120,100);
+      // var mainmenu2 = new Button({
+      //   width:250,
+      //   height:50,
+      //   label:"MAIN MENU",
+      //   backgroundColor:green,
+      //   rollBackgroundColor:blue,
+      //   corner:10
+      // }).center(pane2);
+      // mainmenu2.mov(-120,100);
 
     //}
 
