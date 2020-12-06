@@ -49,53 +49,81 @@ frame.on("ready", function() {
 
     // new Physics(gravity, borders, scroll, frame)
 
-    intro ();
-    function intro() {
-      let introPane = new Pane({width:550,
-        height:200,
-        fadeTime:.7,
-        corner:10,
-        modal:false,
-        backdropColor: "#595959",
-        displayClose:false})
-        .ske(10,0)
-        .show();
+    // intro ();
+    // function intro() {
+    //   let introPane = new Pane({width:550,
+    //     height:200,
+    //     fadeTime:.7,
+    //     corner:10,
+    //     modal:false,
+    //     backdropColor: "#595959",
+    //     displayClose:false})
+    //     .ske(10,0)
+    //     .show();
       
-      let title = new Label({
-        text:"Fruits Basket",
-        size:80,
-        color:red,
-      }).center(introPane);
+    //   let title = new Label({
+    //     text:"Fruits Basket",
+    //     size:80,
+    //     color:red,
+    //   }).center(introPane);
 
-      let startButton = new Button ({
-        width:250,
-        height:50,
-        label:"START!",
-        backgroundColor:green,
-        rollBackgroundColor:blue,
-        corner:10
-      }).center(introPane).mov(0,100);
+    //   let startButton = new Button ({
+    //     width:250,
+    //     height:50,
+    //     label:"START!",
+    //     backgroundColor:green,
+    //     rollBackgroundColor:blue,
+    //     corner:10
+    //   }).center(introPane).mov(0,100);
 
-      startButton.on("mousedown", ()=>{
-        introPane.hide();
-        game();
-      });
+    //   startButton.on("mousedown", ()=>{
+    //     introPane.hide();
+    //     game();
+    //   });
 
-    }
+    // }
+
+    game();
 
 
     function game(){
       
-    // var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
+      // var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
 
-    // var bar = new Rectangle(500, 50, black).centerReg().addPhysics(false);
+      
 
-    // var balls = new Container().addTo();
-    // interval(20, function () {
-    //     new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
-    //         .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
-    // }, 100);
-    // physics.drag();
+      // var balls = new Container().addTo();
+      // interval(20, function () {
+      //     new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
+      //         .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
+      // }, 100);
+      // physics.drag();
+
+
+      // initiate objects
+      // var bar = new Rectangle(500, 50, black).centerReg();
+
+      var backing = new Rectangle(stageW-80, stageH-250, grey)
+        .center()
+        .mov(0,-20);
+
+      var game = new Container(backing.width, backing.height)
+        .loc(backing)
+        .setMask(backing);
+
+      var bar = new Rectangle(500, 50, black).centerReg().pos(200,350,"center","bottom",game);
+
+      // move the bar with MotionController
+      new MotionController({
+        target:bar,
+        type:"mousemove", // default
+        speed:20, // default
+        damp:.1, // default
+        axis:"horizontal",
+        boundary:new Boundary(bar.width/2,backing.y + backing.height, backing.width-bar.width, 0),
+        container:game
+      });
+
 
 
 
