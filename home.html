@@ -51,41 +51,41 @@ frame.on("ready", function() {
 
     // new Physics(gravity, borders, scroll, frame)
 
-    // intro ();
-    // function intro() {
-    //   let introPane = new Pane({width:550,
-    //     height:200,
-    //     fadeTime:.7,
-    //     corner:10,
-    //     modal:false,
-    //     backdropColor: "#595959",
-    //     displayClose:false})
-    //     .ske(10,0)
-    //     .show();
+    intro ();
+    function intro() {
+      let introPane = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        backdropColor: "#595959",
+        displayClose:false})
+        .ske(10,0)
+        .show();
       
-    //   let title = new Label({
-    //     text:"Fruits Basket",
-    //     size:80,
-    //     color:red,
-    //   }).center(introPane);
+      let title = new Label({
+        text:"Fruits Basket",
+        size:80,
+        color:red,
+      }).center(introPane);
 
-    //   let startButton = new Button ({
-    //     width:250,
-    //     height:50,
-    //     label:"START!",
-    //     backgroundColor:green,
-    //     rollBackgroundColor:blue,
-    //     corner:10
-    //   }).center(introPane).mov(0,100);
+      let startButton = new Button ({
+        width:250,
+        height:50,
+        label:"START!",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(introPane).mov(0,100);
 
-    //   startButton.on("mousedown", ()=>{
-    //     introPane.hide();
-    //     game();
-    //   });
+      startButton.on("mousedown", ()=>{
+        introPane.hide();
+        game();
+      });
 
-    // }
+    }
 
-    game();
+    // game();
 
 
     function game(){
@@ -105,7 +105,7 @@ frame.on("ready", function() {
       
       dropBombs();
       Ticker.add(test);
-    }
+    
 
     var backing = new Rectangle(stageW-80, stageH-100, grey)
       .center()
@@ -200,7 +200,7 @@ frame.on("ready", function() {
       bombs.removeFrom();
     }
 
-
+  }
 
     function won() {
 
