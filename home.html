@@ -9,8 +9,8 @@
 <!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner     -->
 <!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate     -->
 
-<script src="https://zimjs.org/cdn/1.2.0/createjs_min.js"></script>
-<script src="https://zimjs.org/cdn/10.5.3/zim.js"></script>
+<script src="https://zimjs.org/cdn/1.3.2/createjs.js"></script>
+<script src="https://zimjs.org/cdn/cat/00/zim.js"></script>
 <!-- use zimjs.com/distill for minified individual functions! -->
 
 <!-- import Box2D and ZIM Physics helper -->
@@ -34,9 +34,11 @@ var height = 768;
 var color = light;
 var outerColor = darker;
 var testText;
+var assets = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "bomb.png"];
+var path = "assets/";
 
 // as of ZIM 5.5.0 you do not need to put zim before ZIM functions and classes
-var frame = new Frame({scaling, width, height, color, outerColor});
+var frame = new Frame(scaling, width, height, color, outerColor, assets, path);
 frame.on("ready", function() {
     zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
 
@@ -88,7 +90,7 @@ frame.on("ready", function() {
 
     function game(){
       
-      // var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
+      var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+20)});
 
       
 
@@ -103,7 +105,7 @@ frame.on("ready", function() {
       // initiate objects
       // var bar = new Rectangle(500, 50, black).centerReg();
 
-      var backing = new Rectangle(stageW-80, stageH-250, grey)
+      var backing = new Rectangle(stageW-80, stageH-100, grey)
         .center()
         .mov(0,-20);
 
@@ -111,8 +113,10 @@ frame.on("ready", function() {
         .loc(backing)
         .setMask(backing);
 
-      var bar = new Rectangle(500, 50, black).centerReg().pos(200,350,"center","bottom",game);
-
+      var bar = asset("f7.png")
+        .scaleTo(stage, 40)
+        .centerReg()
+        .pos(0,50,CENTER,BOTTOM,game);
       // move the bar with MotionController
       new MotionController({
         target:bar,
@@ -124,6 +128,54 @@ frame.on("ready", function() {
         container:game
       });
 
+
+
+      const falling_object = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "bomb.png"];
+
+      for (let i = 0; i < falling_object.length; i++){
+        falling(falling_object[i]);
+      }
+
+      function falling(fruit) {
+        var f = new Container().addTo(game);
+        
+        interval([1, 5], function() {
+          var f1 = asset(fruit).scaleTo(stage, 8)
+            .clone()
+            .centerReg()
+            .loc(rand(0, game.width), rand(-100,0), f)
+            .animate({
+              props:{y:backing.height-20},
+              time:5,
+              ease:"linear",
+              call:remove
+            })
+            // .bot()
+            // .addPhysics({restitution:.5});
+        });
+        
+        function remove(obj) {
+          obj.removeFrom();
+          obj = null;
+        }
+      }
+
+
+      // function test() {
+      //   bombs.loop(function(bomb) {
+      //     if (bar.hitTestBounds(bomb)) {
+      //       explode(bomb);
+      //     }
+      //   }, true); // true loops backwards as we are removing children
+      //   coins.loop(function(coin) {
+      //     if (bar.hitTestBounds(coin)) {
+      //       grab(coin);
+      //       // get points etc.
+      //     }
+      //   }, true); // true loops backwards as we are removing children
+      // }
+
+      
 
 
 
