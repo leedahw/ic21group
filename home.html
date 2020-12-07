@@ -90,9 +90,7 @@ frame.on("ready", function() {
 
     function game(){
       
-      var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+20)});
-
-      
+      // var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+20)});
 
       // var balls = new Container().addTo();
       // interval(20, function () {
@@ -104,161 +102,184 @@ frame.on("ready", function() {
 
       // initiate objects
       // var bar = new Rectangle(500, 50, black).centerReg();
-
-      var backing = new Rectangle(stageW-80, stageH-100, grey)
-        .center()
-        .mov(0,-20);
-
-      var game = new Container(backing.width, backing.height)
-        .loc(backing)
-        .setMask(backing);
-
-      var bar = asset("f7.png")
-        .scaleTo(stage, 40)
-        .centerReg()
-        .pos(0,50,CENTER,BOTTOM,game);
-      // move the bar with MotionController
-      new MotionController({
-        target:bar,
-        type:"mousemove", // default
-        speed:20, // default
-        damp:.1, // default
-        axis:"horizontal",
-        boundary:new Boundary(bar.width/2,backing.y + backing.height, backing.width-bar.width, 0),
-        container:game
-      });
-
-
-
-      const falling_object = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "bomb.png"];
-
-      for (let i = 0; i < falling_object.length; i++){
-        falling(falling_object[i]);
-      }
-
-      function falling(fruit) {
-        var f = new Container().addTo(game);
-        
-        interval([1, 5], function() {
-          var f1 = asset(fruit).scaleTo(stage, 8)
-            .clone()
-            .centerReg()
-            .loc(rand(0, game.width), rand(-100,0), f)
-            .animate({
-              props:{y:backing.height-20},
-              time:5,
-              ease:"linear",
-              call:remove
-            })
-            // .bot()
-            // .addPhysics({restitution:.5});
-        });
-        
-        function remove(obj) {
-          obj.removeFrom();
-          obj = null;
-        }
-      }
-
-
-      // function test() {
-      //   bombs.loop(function(bomb) {
-      //     if (bar.hitTestBounds(bomb)) {
-      //       explode(bomb);
-      //     }
-      //   }, true); // true loops backwards as we are removing children
-      //   coins.loop(function(coin) {
-      //     if (bar.hitTestBounds(coin)) {
-      //       grab(coin);
-      //       // get points etc.
-      //     }
-      //   }, true); // true loops backwards as we are removing children
-      // }
-
       
+      dropBombs();
+      Ticker.add(test);
+    }
+
+    var backing = new Rectangle(stageW-80, stageH-100, grey)
+      .center()
+      .mov(0,-20);
+
+    var game = new Container(backing.width, backing.height)
+      .loc(backing)
+      .setMask(backing);
+
+    var bar = asset("f7.png")
+      .scaleTo(stage, 20)
+      .centerReg()
+      .pos(0,50,CENTER,BOTTOM,game);
+    // move the bar with MotionController
+    new MotionController({
+      target:bar,
+      type:"mousemove", // default
+      speed:20, // default
+      damp:.1, // default
+      axis:"horizontal",
+      boundary:new Boundary(bar.width/2,backing.y + backing.height, backing.width-bar.width, 0),
+      container:game
+    });
 
 
+    // falling fruit
+    const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
+    var f_list = [];
+    for (let i = 0; i < falling_fruit.length; i++) {
+      var f = new Container().addTo(game);
+      f_list.push(f);
+      falling(f, falling_fruit[i]);
+    }
+
+    function falling(f, fruit) {
+      interval([1, 5], function() {
+        var f1 = asset(fruit).scaleTo(stage, 8)
+          .clone()
+          .centerReg()
+          .loc(rand(0, game.width), rand(-100,0), f)
+          .animate({
+            props:{y:backing.height-20},
+            time:5,
+            ease:"linear",
+            call:remove
+          })
+      });
+      
+      
+    }
+
+    function remove(obj) {
+      obj.removeFrom();
+      obj = null;
+    }
+
+    // falling bomb
+    var bombs = new Container().addTo(game);
+    function dropBombs() {
+      interval([1,3], function() {
+        var bomb = asset("bomb.png")
+          .scaleTo(stage, 8)
+          .clone()
+          .centerReg()
+          .loc(rand(0, game.width), 50, bombs)
+          .animate({
+            props:{y:backing.height-20},
+            time:3,
+            ease:"linear",
+            call:function (target) {
+              remove(target);
+            }
+          });
+      });
+    }
+
+
+    // hit test
+    function test() {
+      bombs.loop(function(bomb) {
+        if (bar.hitTestBounds(bomb)) {
+          clear();
+          lost();
+        }
+      }, true);
+    }
+
+    function clear() {
+      for (let i = 0; i < f_list.length; i++){
+        f_list[i].removeFrom();
+      }
+      bombs.removeFrom();
+    }
+
+
+
+    function won() {
+
+      var pane = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        displayClose:false})
+        .loc(0,500)
+        .ske(10,0)
+        .show();
+
+      new Label({
+        text:"You Won",
+        size:80,
+        color:grey,
+      }).center(pane);
+
+      var replay = new Button({
+        width:220,
+        height:50,
+        label:"REPLAY",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane);
+      replay.mov(135,100);
+
+      var mainmenu = new Button({
+        width:250,
+        height:50,
+        label:"MAIN MENU",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane);
+      mainmenu.mov(-120,100);
 
     }
 
-    // //function won() {
+     function lost() {
 
-    //   var pane = new Pane({width:550,
-    //     height:200,
-    //     fadeTime:.7,
-    //     corner:10,
-    //     modal:false,
-    //     displayClose:false})
-    //     .loc(0,500)
-    //     .ske(10,0)
-    //     .show();
-
-    //   new Label({
-    //     text:"You Won",
-    //     size:80,
-    //     color:grey,
-    //   }).center(pane);
-
-    //   var replay = new Button({
-    //     width:220,
-    //     height:50,
-    //     label:"REPLAY",
-    //     backgroundColor:green,
-    //     rollBackgroundColor:blue,
-    //     corner:10
-    //   }).center(pane);
-    //   replay.mov(135,100);
-
-    //   var mainmenu = new Button({
-    //     width:250,
-    //     height:50,
-    //     label:"MAIN MENU",
-    //     backgroundColor:green,
-    //     rollBackgroundColor:blue,
-    //     corner:10
-    //   }).center(pane);
-    //   mainmenu.mov(-120,100);
-
-    // }
-
-     //function lost() {
-
-      // var pane2 = new Pane({width:550,
-      //   height:200,
-      //   fadeTime:.7,
-      //   corner:10,
-      //   modal:false,
-      //   displayClose:false})
-      //   .ske(10,0)
-      //   .show();
+      var pane2 = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        displayClose:false})
+        .ske(10,0)
+        .show();
       
-      // new Label({
-      //   text:"Game Over",
-      //   size:80,
-      //   color:grey,
-      // }).center(pane2);
+      new Label({
+        text:"Game Over",
+        size:80,
+        color:grey,
+      }).center(pane2);
       
-      // var tryagain = new Button({
-      //   width:220,
-      //   height:50,
-      //   label:"TRY AGAIN",
-      //   backgroundColor:green,
-      //   rollBackgroundColor:blue,
-      //   corner:10
-      // }).center(pane2);
-      // tryagain.mov(135,100);
+      var tryagain = new Button({
+        width:220,
+        height:50,
+        label:"TRY AGAIN",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane2);
+      tryagain.mov(135,100);
       
-      // var mainmenu2 = new Button({
-      //   width:250,
-      //   height:50,
-      //   label:"MAIN MENU",
-      //   backgroundColor:green,
-      //   rollBackgroundColor:blue,
-      //   corner:10
-      // }).center(pane2);
-      // mainmenu2.mov(-120,100);
+      var mainmenu2 = new Button({
+        width:250,
+        height:50,
+        label:"MAIN MENU",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane2);
+      mainmenu2.mov(-120,100);
 
-    //}
+    }
 
     stage.update(); // this is needed to show any changes
 
