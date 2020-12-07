@@ -53,8 +53,8 @@ frame.on("ready", function() {
 
     intro ();
     function intro() {
-      let introPane = new Pane({width:550,
-        height:200,
+      let introPane = new Pane({width:800,
+        height:300,
         fadeTime:.7,
         corner:10,
         modal:false,
@@ -67,7 +67,13 @@ frame.on("ready", function() {
         text:"Fruits Basket",
         size:80,
         color:red,
-      }).center(introPane);
+      }).center(introPane).mov(0,-50);
+
+      let instructions = new Label ({
+          text: "Collect the fruits & Avoid the bombs!",
+          size: 40,
+          color: red,
+      }).center(introPane).mov(0,75);
 
       let startButton = new Button ({
         width:250,
@@ -76,7 +82,7 @@ frame.on("ready", function() {
         backgroundColor:green,
         rollBackgroundColor:blue,
         corner:10
-      }).center(introPane).mov(0,100);
+      }).center(introPane).mov(0,150);
 
       startButton.on("mousedown", ()=>{
         introPane.hide();
@@ -121,7 +127,7 @@ frame.on("ready", function() {
 
     //score counter
     const scorer = new Scorer({backgroundColor:pink}).sca(.8).alp(.9).pos(40, 30, true); // at right
-
+    var f1
     // falling fruit
     const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
     var f_list = [];
@@ -133,7 +139,7 @@ frame.on("ready", function() {
 
     function falling(f, fruit) {
       interval([1, 5], function() {
-        var f1 = asset(fruit).scaleTo(stage, 8)
+        f1 = asset(fruit).scaleTo(stage, 8)
           .clone()
           .centerReg()
           .loc(rand(0, game.width), rand(-100,0), f)
@@ -144,7 +150,6 @@ frame.on("ready", function() {
             call:remove
           })
       });
-      
       
     }
 
@@ -183,12 +188,20 @@ frame.on("ready", function() {
         }
       }, true);
 
-      f.loop(function(fruit){
-        if (bar.hitTestBounds(falling_fruit)){
+      f.loop(function(f1){
+        if (bar.hitTestBounds(f1)){
+            scorer.score=scorer.score+1;// add to score if fruits are hit.
             clearfruit();
         }
       },true);
+
+
     }
+    
+    if (scorer.score==1){
+          zog("oops");
+        won();
+      }
 
     function clear() {
       for (let i = 0; i < f_list.length; i++){
@@ -202,9 +215,10 @@ frame.on("ready", function() {
        for (let i = 0; i < f_list.length; i++){
         f_list[i].removeFrom();
       }
-      falling_fruit.removeFrom();
     }
-  
+
+
+
   }
 
 
