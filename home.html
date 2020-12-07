@@ -198,6 +198,7 @@ frame.on("ready", function() {
         f_list[i].removeFrom();
       }
       bombs.removeFrom();
+      bar.removeFrom();
     }
 
   }
@@ -279,7 +280,19 @@ frame.on("ready", function() {
       }).center(pane2);
       mainmenu2.mov(-120,100);
 
+      tryagain.on("mousedown", ()=>{
+        pane2.hide();
+        game();
+      });
+
+      mainmenu2.on("mousedown", ()=>{
+        pane2.hide();
+        intro();
+      });
+
     }
+
+    
 
     stage.update(); // this is needed to show any changes
 
