@@ -16,7 +16,7 @@
 <!-- import Box2D and ZIM Physics helper -->
 <script src="https://zimjs.org/cdn/Box2dWeb-2.1.a.3.min.js"></script>
 <script src="https://zimjs.org/cdn/physics_2.0.js"></script>
-
+<script src="https://zimjs.org/cdn/game_2.4.js"></script>
 <script src="https://zimjs.com/ten/header.js"></script>
 
 <script>
@@ -89,23 +89,12 @@ frame.on("ready", function() {
 
 
     function game(){
-      
-      // var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+20)});
 
-      // var balls = new Container().addTo();
-      // interval(20, function () {
-      //     new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
-      //         .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
-      // }, 100);
-      // physics.drag();
-
-
-      // initiate objects
-      // var bar = new Rectangle(500, 50, black).centerReg();
       
       dropBombs();
       Ticker.add(test);
     
+
 
     var backing = new Rectangle(stageW-80, stageH-100, grey)
       .center()
@@ -130,6 +119,8 @@ frame.on("ready", function() {
       container:game
     });
 
+    //score counter
+    const scorer = new Scorer({backgroundColor:pink}).sca(.8).alp(.9).pos(40, 30, true); // at right
 
     // falling fruit
     const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
@@ -191,6 +182,12 @@ frame.on("ready", function() {
           lost();
         }
       }, true);
+
+      f.loop(function(fruit){
+        if (bar.hitTestBounds(falling_fruit)){
+            clearfruit();
+        }
+      },true);
     }
 
     function clear() {
@@ -201,7 +198,17 @@ frame.on("ready", function() {
       bar.removeFrom();
     }
 
+    function clearfruit(){
+       for (let i = 0; i < f_list.length; i++){
+        f_list[i].removeFrom();
+      }
+      falling_fruit.removeFrom();
+    }
+  
   }
+
+
+
 
     function won() {
 
@@ -296,9 +303,6 @@ frame.on("ready", function() {
 
     stage.update(); // this is needed to show any changes
 
-    // var physics_boundary = new Physics(0, new Boundary(0,-500, stageW, stageH+100));
-    // bar.addPhysics();
-    // stage.update();
 
 }); // end of ready
 
