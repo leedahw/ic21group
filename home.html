@@ -34,7 +34,7 @@ var height = 768;
 var color = light;
 var outerColor = darker;
 var testText;
-var assets = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "bomb.png"];
+var assets = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "bomb.png", "background_image.png"];
 var path = "assets/";
 
 // as of ZIM 5.5.0 you do not need to put zim before ZIM functions and classes
@@ -53,6 +53,11 @@ frame.on("ready", function() {
 
     intro ();
     function intro() {
+
+      var backing = asset("background_image.png")
+        .center()
+        .mov(0,-20);
+
       let introPane = new Pane({width:800,
         height:300,
         fadeTime:.7,
@@ -62,7 +67,7 @@ frame.on("ready", function() {
         displayClose:false})
         .ske(10,0)
         .show();
-      
+
       let title = new Label({
         text:"Fruits Basket",
         size:80,
@@ -96,15 +101,14 @@ frame.on("ready", function() {
 
     function game(){
 
-      
+
       dropBombs();
       Ticker.add(test);
-    
 
 
-    var backing = new Rectangle(stageW-80, stageH-100, grey)
-      .center()
-      .mov(0,-20);
+      var backing = asset("background_image.png")
+        .center()
+        .mov(0,-20);
 
     var game = new Container(backing.width, backing.height)
       .loc(backing)
@@ -152,7 +156,7 @@ frame.on("ready", function() {
           })
         temp.push(f1);
       });
-      
+
     }
 
     function remove(obj) {
@@ -189,13 +193,13 @@ frame.on("ready", function() {
           lost();
         }
       }, true);
-      
+
       for (let i = 0; i < temp.length; i++){
         var curr = temp[i];
         if (bar.hitTestBounds(curr)){
             scorer.score=scorer.score+1;// add to score if fruits are hit.
             clearfruit(curr);
-            if (scorer.score == 2){
+            if (scorer.score == 30){
               won();
               clear();
             }
@@ -287,13 +291,13 @@ frame.on("ready", function() {
         displayClose:false})
         .ske(10,0)
         .show();
-      
+
       new Label({
         text:"Game Over",
         size:80,
         color:grey,
       }).center(pane2);
-      
+
       var tryagain = new Button({
         width:220,
         height:50,
@@ -303,7 +307,7 @@ frame.on("ready", function() {
         corner:10
       }).center(pane2);
       tryagain.mov(135,100);
-      
+
       var mainmenu2 = new Button({
         width:250,
         height:50,
@@ -326,7 +330,7 @@ frame.on("ready", function() {
 
     }
 
-    
+
 
     stage.update(); // this is needed to show any changes
 
