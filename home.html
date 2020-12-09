@@ -195,14 +195,18 @@ frame.on("ready", function() {
         if (bar.hitTestBounds(curr)){
             scorer.score=scorer.score+1;// add to score if fruits are hit.
             clearfruit(curr);
+            if (scorer.score == 2){
+              won();
+              clear();
+            }
         }
       }
     }
 
-    if (scorer.score==30){
-          zog("oops");
-        won();
-      }
+    // if (scorer.score==2){
+    //       zog("oops");
+    //     won();
+    //   }
 
     function clear() {
       for (let i = 0; i < f_list.length; i++){
