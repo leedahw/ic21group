@@ -131,6 +131,7 @@ frame.on("ready", function() {
     // falling fruit
     const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
     var f_list = [];
+    var temp = [];
     for (let i = 0; i < falling_fruit.length; i++) {
       var f = new Container().addTo(game);
       f_list.push(f);
@@ -149,6 +150,7 @@ frame.on("ready", function() {
             ease:"linear",
             call:remove
           })
+        temp.push(f1);
       });
       
     }
@@ -187,15 +189,14 @@ frame.on("ready", function() {
           lost();
         }
       }, true);
-
-      f.loop(function(f1){
-        if (bar.hitTestBounds(f1)){
+      
+      for (let i = 0; i < temp.length; i++){
+        var curr = temp[i];
+        if (bar.hitTestBounds(curr)){
             scorer.score=scorer.score+1;// add to score if fruits are hit.
-            clearfruit(f1);
+            clearfruit(curr);
         }
-      },true);
-
-
+      }
     }
 
     if (scorer.score==30){
