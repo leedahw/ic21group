@@ -265,6 +265,16 @@ frame.on("ready", function() {
       }).center(pane);
       mainmenu.mov(-120,100);
 
+      replay.on("mousedown", ()=>{
+        pane.hide();
+        game();
+      });
+
+      mainmenu.on("mousedown", ()=>{
+        pane.hide();
+        intro();
+      });
+
     }
 
      function lost() {
