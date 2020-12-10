@@ -49,6 +49,7 @@ frame.on("ready", function() {
     // See https://zimjs.com/docs.html?item=Physics
     // See https://zimjs.com/docs.html?item=addPhysics
 
+    let scorer 
     // new Physics(gravity, borders, scroll, frame)
 
     intro ();
@@ -75,7 +76,7 @@ frame.on("ready", function() {
       }).center(introPane).mov(0,-50);
 
       let instructions = new Label ({
-          text: "Collect the fruits & Avoid the bombs!",
+          text: "Collect 30 fruits & avoid the bombs!",
           size: 40,
           color: red,
       }).center(introPane).mov(0,75);
@@ -130,7 +131,7 @@ frame.on("ready", function() {
     });
 
     //score counter
-    const scorer = new Scorer({backgroundColor:pink}).sca(.8).alp(.9).pos(40, 30, true); // at right
+    scorer = new Scorer({backgroundColor:pink}).sca(.8).alp(.9).pos(40, 30, true); // at right
     var f1
     // falling fruit
     const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
@@ -191,6 +192,7 @@ frame.on("ready", function() {
         if (bar.hitTestBounds(bomb)) {
           clear();
           lost();
+          scorer.removeFrom();
         }
       }, true);
 
@@ -207,28 +209,20 @@ frame.on("ready", function() {
       }
     }
 
-    // if (scorer.score==2){
-    //       zog("oops");
-    //     won();
-    //   }
-
     function clear() {
       for (let i = 0; i < f_list.length; i++){
         f_list[i].removeFrom();
       }
       bombs.removeFrom();
       bar.removeFrom();
+
     }
 
     function clearfruit(f1){
         f1.removeFrom();
     }
 
-
-
   }
-
-
 
 
     function won() {
@@ -282,7 +276,6 @@ frame.on("ready", function() {
     }
 
      function lost() {
-
       var pane2 = new Pane({width:550,
         height:200,
         fadeTime:.7,
@@ -292,11 +285,24 @@ frame.on("ready", function() {
         .ske(10,0)
         .show();
 
-      new Label({
+      let gameover = new Label({
         text:"Game Over",
-        size:80,
+        size:60,
         color:grey,
-      }).center(pane2);
+      }).center(pane2).mov(0,-25);
+
+      let yourScore = new Label ({
+        text: "Your Score:",
+        size:30,
+        color:grey,
+      }).center(pane2).mov(-40,40);
+
+      let finalScore = new Scorer({
+        score:scorer.score,
+        backgroundColor:clear,
+        color:grey,
+
+      }).center(pane2).mov(80,40);
 
       var tryagain = new Button({
         width:220,
