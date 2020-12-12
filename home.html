@@ -34,7 +34,7 @@ var height = 768;
 var color = light;
 var outerColor = darker;
 var testText;
-var assets = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "bomb.png", "background_image.png"];
+var assets = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "bomb.png", "background_image.png", {src:"https://fonts.googleapis.com/css2?family=Ranchers&display=swap"}, {src:"https://fonts.googleapis.com/css2?family=Raleway&family=Ranchers&display=swap"}, "bensound-funnysong.mp3", "boom.mp3", "win.mp3"];
 var path = "assets/";
 
 // as of ZIM 5.5.0 you do not need to put zim before ZIM functions and classes
@@ -49,8 +49,17 @@ frame.on("ready", function() {
     // See https://zimjs.com/docs.html?item=Physics
     // See https://zimjs.com/docs.html?item=addPhysics
 
-    let scorer 
+    let scorer
     // new Physics(gravity, borders, scroll, frame)
+
+    //bomb explosion sound
+    let boom
+
+    //victory sound
+    let win
+
+    //game background music
+    let gameSound
 
     intro ();
     function intro() {
@@ -71,14 +80,15 @@ frame.on("ready", function() {
 
       let title = new Label({
         text:"Fruits Basket",
-        size:80,
-        color:red,
+        font:"Ranchers",
+        size:100,
+        color:blue,
       }).center(introPane).mov(0,-50);
 
       let instructions = new Label ({
           text: "Collect 30 fruits & avoid the bombs!",
-          size: 40,
-          color: red,
+          font:"Raleway",
+          size: 40
       }).center(introPane).mov(0,75);
 
       let startButton = new Button ({
@@ -90,22 +100,29 @@ frame.on("ready", function() {
         corner:10
       }).center(introPane).mov(0,150);
 
+      let credit = new Label({
+        text:"Music: www.bensound.com",
+        font:"Raleway",
+        size:15,
+        color:grey
+      }).center().mov(400,340);
+
       startButton.on("mousedown", ()=>{
         introPane.hide();
+        // credit.removeFrom();
         game();
       });
 
     }
 
+
     // game();
-
-
     function game(){
 
+    gameSound = asset("bensound-funnysong.mp3").play();
 
       dropBombs();
       Ticker.add(test);
-
 
       var backing = asset("background_image.png")
         .center()
@@ -119,6 +136,8 @@ frame.on("ready", function() {
       .scaleTo(stage, 20)
       .centerReg()
       .pos(0,50,CENTER,BOTTOM,game);
+
+
     // move the bar with MotionController
     new MotionController({
       target:bar,
@@ -130,9 +149,12 @@ frame.on("ready", function() {
       container:game
     });
 
+
     //score counter
     scorer = new Scorer({backgroundColor:pink}).sca(.8).alp(.9).pos(40, 30, true); // at right
     var f1
+
+
     // falling fruit
     const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
     var f_list = [];
@@ -142,6 +164,8 @@ frame.on("ready", function() {
       f_list.push(f);
       falling(f, falling_fruit[i]);
     }
+
+
     //f = container     //f1 object on-screen = coin in source code
     function falling(f, fruit) {
       interval([1, 5], function() {
@@ -164,6 +188,7 @@ frame.on("ready", function() {
       obj.removeFrom();
       obj = null;
     }
+
 
     // falling bomb f=bombs f1=bomb
     var bombs = new Container().addTo(game);
@@ -188,9 +213,14 @@ frame.on("ready", function() {
 
     // hit test
     function test() {
+
+      boom = asset("boom.mp3");
+
       bombs.loop(function(bomb) {
         if (bar.hitTestBounds(bomb)) {
           clear();
+          gameSound.stop();
+          boom.play();
           lost();
           scorer.removeFrom();
         }
@@ -224,8 +254,10 @@ frame.on("ready", function() {
 
   }
 
-
     function won() {
+
+      gameSound.stop();
+      win = asset("win.mp3").play();
 
       var pane = new Pane({width:550,
         height:200,
@@ -239,8 +271,9 @@ frame.on("ready", function() {
 
       new Label({
         text:"You Won",
+        font:"Ranchers",
         size:80,
-        color:grey,
+        color:blue,
       }).center(pane);
 
       var replay = new Button({
@@ -276,6 +309,7 @@ frame.on("ready", function() {
     }
 
      function lost() {
+
       var pane2 = new Pane({width:550,
         height:200,
         fadeTime:.7,
@@ -287,12 +321,14 @@ frame.on("ready", function() {
 
       let gameover = new Label({
         text:"Game Over",
+        font:"Ranchers",
         size:60,
-        color:grey,
+        color:red,
       }).center(pane2).mov(0,-25);
 
       let yourScore = new Label ({
         text: "Your Score:",
+        font:"Raleway",
         size:30,
         color:grey,
       }).center(pane2).mov(-40,40);
@@ -301,7 +337,6 @@ frame.on("ready", function() {
         score:scorer.score,
         backgroundColor:clear,
         color:grey,
-
       }).center(pane2).mov(80,40);
 
       var tryagain = new Button({
@@ -336,10 +371,7 @@ frame.on("ready", function() {
 
     }
 
-
-
     stage.update(); // this is needed to show any changes
-
 
 }); // end of ready
 
