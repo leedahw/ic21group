@@ -2,22 +2,26 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>ZIM Physics</title>
+
+<title>Fruits Basket</title>
 
 <!-- Welcome to ZIM at http://zimjs.com - Code Interactive Media Pizzazz!             -->
 <!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS http://createjs.com -->
 <!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner     -->
 <!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate     -->
 
-<script src="https://zimjs.org/cdn/1.2.0/createjs_min.js"></script>
-<script src="https://zimjs.org/cdn/10.5.3/zim.js"></script>
+
+<script src="https://zimjs.org/cdn/1.3.2/createjs.js"></script>
+<script src="https://zimjs.org/cdn/cat/00/zim.js"></script>
+
 <!-- use zimjs.com/distill for minified individual functions! -->
 
 <!-- import Box2D and ZIM Physics helper -->
 <script src="https://zimjs.org/cdn/Box2dWeb-2.1.a.3.min.js"></script>
 <script src="https://zimjs.org/cdn/physics_2.0.js"></script>
 
-<script src="https://zimjs.com/ten/header.js"></script>
+<script src="https://zimjs.org/cdn/game_2.4.js"></script>
+
 
 <script>
 
@@ -35,8 +39,12 @@ var color = light;
 var outerColor = darker;
 var testText;
 
+var assets = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "bomb.png", "background_image.png", {src:"https://fonts.googleapis.com/css2?family=Ranchers&display=swap"}, {src:"https://fonts.googleapis.com/css2?family=Raleway&family=Ranchers&display=swap"}, "bensound-funnysong.mp3", "boom.mp3", "win.mp3"];
+var path = "assets/";
+
 // as of ZIM 5.5.0 you do not need to put zim before ZIM functions and classes
-var frame = new Frame({scaling, width, height, color, outerColor});
+var frame = new Frame(scaling, width, height, color, outerColor, assets, path);
+
 frame.on("ready", function() {
     zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
 
@@ -47,24 +55,338 @@ frame.on("ready", function() {
     // See https://zimjs.com/docs.html?item=Physics
     // See https://zimjs.com/docs.html?item=addPhysics
 
+    let scorer
     // new Physics(gravity, borders, scroll, frame)
 
-    var physics = new Physics({borders: new Boundary(0,-100, stageW, stageH+100)});
+    //bomb explosion sound
+    let boom
 
-    var bar = new Rectangle(500, 50, black).centerReg().addPhysics(false);
+    //victory sound
+    let win
 
-    var balls = new Container().addTo();
-    interval(20, function () {
-        new Circle(20, [blue, green, red, purple, grey, brown, orange, pink])
-            .loc(rand(stageW), -50, balls).bot().addPhysics({restitution:.5});
-    }, 100);
-    physics.drag();
+    //game background music
+    let gameSound
+
+    intro ();
+    function intro() {
+
+      var backing = asset("background_image.png")
+        .center()
+        .mov(0,-20);
+
+      let introPane = new Pane({width:800,
+        height:300,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        backdropColor: "#595959",
+        displayClose:false})
+        .ske(10,0)
+        .show();
+
+      let title = new Label({
+        text:"Fruits Basket",
+        font:"Ranchers",
+        size:100,
+        color:blue,
+      }).center(introPane).mov(0,-50);
+
+      let instructions = new Label ({
+          text: "Collect 30 fruits & avoid the bombs!",
+          font:"Raleway",
+          size: 40
+      }).center(introPane).mov(0,75);
+
+      let startButton = new Button ({
+        width:250,
+        height:50,
+        label:"START!",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(introPane).mov(0,150);
+
+      let credit = new Label({
+        text:"Music: www.bensound.com",
+        font:"Raleway",
+        size:15,
+        color:grey
+      }).center().mov(400,340);
+
+      let credit2 = new Label({
+        text:"Sound: www.zedge.net",
+        font:"Raleway",
+        size:15,
+        color:grey
+      }).center().mov(-400,340);
+
+      startButton.on("mousedown", ()=>{
+        introPane.hide();
+        // credit.removeFrom();
+        game();
+      });
+
+    }
+
+
+    // game();
+    function game(){
+
+    gameSound = asset("bensound-funnysong.mp3").play();
+
+      dropBombs();
+      Ticker.add(test);
+
+      var backing = asset("background_image.png")
+        .center()
+        .mov(0,-20);
+
+    var game = new Container(backing.width, backing.height)
+      .loc(backing)
+      .setMask(backing);
+
+    var bar = asset("f7.png")
+      .scaleTo(stage, 20)
+      .centerReg()
+      .pos(0,50,CENTER,BOTTOM,game);
+
+
+    // move the bar with MotionController
+    new MotionController({
+      target:bar,
+      type:"mousemove", // default
+      speed:20, // default
+      damp:.1, // default
+      axis:"horizontal",
+      boundary:new Boundary(bar.width/2,backing.y + backing.height, backing.width-bar.width, 0),
+      container:game
+    });
+
+
+    //score counter
+    scorer = new Scorer({backgroundColor:pink}).sca(.8).alp(.9).pos(40, 30, true); // at right
+    var f1
+
+
+    // falling fruit
+    const falling_fruit = ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png"];
+    var f_list = [];
+    var temp = [];
+    for (let i = 0; i < falling_fruit.length; i++) {
+      var f = new Container().addTo(game);
+      f_list.push(f);
+      falling(f, falling_fruit[i]);
+    }
+
+
+    //f = container     //f1 object on-screen = coin in source code
+    function falling(f, fruit) {
+      interval([1, 5], function() {
+        f1 = asset(fruit).scaleTo(stage, 8)
+          .clone()
+          .centerReg()
+          .loc(rand(0, game.width), rand(-100,0), f)
+          .animate({
+            props:{y:backing.height-20},
+            time:5,
+            ease:"linear",
+            call:remove
+          })
+        temp.push(f1);
+      });
+
+    }
+
+    function remove(obj) {
+      obj.removeFrom();
+      obj = null;
+    }
+
+
+    // falling bomb f=bombs f1=bomb
+    var bombs = new Container().addTo(game);
+    function dropBombs() {
+      interval([1,3], function() {
+        var bomb = asset("bomb.png")
+          .scaleTo(stage, 8)
+          .clone()
+          .centerReg()
+          .loc(rand(0, game.width), 50, bombs)
+          .animate({
+            props:{y:backing.height-20},
+            time:3,
+            ease:"linear",
+            call:function (target) {
+              remove(target);
+            }
+          });
+      });
+    }
+
+
+    // hit test
+    function test() {
+
+      boom = asset("boom.mp3");
+
+      bombs.loop(function(bomb) {
+        if (bar.hitTestBounds(bomb)) {
+          clear();
+          gameSound.stop();
+          boom.play();
+          lost();
+          scorer.removeFrom();
+        }
+      }, true);
+
+      for (let i = 0; i < temp.length; i++){
+        var curr = temp[i];
+        if (bar.hitTestBounds(curr)){
+            scorer.score=scorer.score+1;// add to score if fruits are hit.
+            clearfruit(curr);
+            if (scorer.score == 30){
+              won();
+              clear();
+              scorer.removeFrom();
+            }
+        }
+      }
+    }
+
+    function clear() {
+      for (let i = 0; i < f_list.length; i++){
+        f_list[i].removeFrom();
+      }
+      bombs.removeFrom();
+      bar.removeFrom();
+
+    }
+
+    function clearfruit(f1){
+        f1.removeFrom();
+    }
+
+  }
+
+    function won() {
+
+      gameSound.stop();
+      win = asset("win.mp3").play();
+
+      var pane = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        displayClose:false})
+        .loc(0,500)
+        .ske(10,0)
+        .show();
+
+      new Label({
+        text:"You Won",
+        font:"Ranchers",
+        size:80,
+        color:blue,
+      }).center(pane);
+
+      var replay = new Button({
+        width:220,
+        height:50,
+        label:"REPLAY",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane);
+      replay.mov(135,100);
+
+      var mainmenu = new Button({
+        width:250,
+        height:50,
+        label:"MAIN MENU",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane);
+      mainmenu.mov(-120,100);
+
+      replay.on("mousedown", ()=>{
+        pane.hide();
+        game();
+      });
+
+      mainmenu.on("mousedown", ()=>{
+        pane.hide();
+        intro();
+      });
+
+    }
+
+     function lost() {
+
+      var pane2 = new Pane({width:550,
+        height:200,
+        fadeTime:.7,
+        corner:10,
+        modal:false,
+        displayClose:false})
+        .ske(10,0)
+        .show();
+
+      let gameover = new Label({
+        text:"Game Over",
+        font:"Ranchers",
+        size:60,
+        color:red,
+      }).center(pane2).mov(0,-25);
+
+      let yourScore = new Label ({
+        text: "Your Score:",
+        font:"Raleway",
+        size:30,
+        color:grey,
+      }).center(pane2).mov(-40,40);
+
+      let finalScore = new Scorer({
+        score:scorer.score,
+        backgroundColor:clear,
+        color:grey,
+      }).center(pane2).mov(80,40);
+
+      var tryagain = new Button({
+        width:220,
+        height:50,
+        label:"TRY AGAIN",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane2);
+      tryagain.mov(135,100);
+
+      var mainmenu2 = new Button({
+        width:250,
+        height:50,
+        label:"MAIN MENU",
+        backgroundColor:green,
+        rollBackgroundColor:blue,
+        corner:10
+      }).center(pane2);
+      mainmenu2.mov(-120,100);
+
+      tryagain.on("mousedown", ()=>{
+        pane2.hide();
+        game();
+      });
+
+      mainmenu2.on("mousedown", ()=>{
+        pane2.hide();
+        intro();
+      });
+
+    }
 
     stage.update(); // this is needed to show any changes
 
-    // var physics_boundary = new Physics(0, new Boundary(0,-500, stageW, stageH+100));
-    // bar.addPhysics();
-    // stage.update();
 
 }); // end of ready
 
@@ -77,3 +399,4 @@ frame.on("ready", function() {
 <body>
 </body>
 </html>
+
